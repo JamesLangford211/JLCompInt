@@ -15,6 +15,8 @@ public class Engine {
 		//Initialisation:
 			//Make some random functions
 		ArrayList<ArrayList<ExpressionPart>> randomFunctions = initialFunctionList(POP);
+		ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);
+		
 		
 		
 		//EVAL collection
@@ -33,11 +35,32 @@ public class Engine {
 		
 	}
 	
-	public ArrayList<ArrayList<Operand>> popDataTable(){
+	public String expressionText(ArrayList<ExpressionPart> exp){
+		String expression = "";
+		for(ExpressionPart ep : exp){
+			expression+= ep.toString();
+		}
+		
+		return expression;
+	}
+	public ArrayList<ExpressionPart> formExpression(ArrayList<ExpressionPart> ops, ArrayList<Operand> data){
+		ArrayList<ExpressionPart> expression = new ArrayList<ExpressionPart>();
+		//for every data but the last, add the operator to it
+		for(int i = 0; i<data.size(); i++){
+			expression.add(data.get(i));
+			if(i<data.size()-1){
+				expression.add(ops.get(i));
+			}
+			
+		}		
+		return expression;
+	}
+	
+	public ArrayList<ArrayList<Operand>> popDataTable(String url){
 		ArrayList<ArrayList<Operand>> dataTable = new ArrayList<ArrayList<Operand>>();
 		Scanner scanner;
 		try {
-			scanner = new Scanner(new File(TEST_URL));
+			scanner = new Scanner(new File(url));
 			scanner.useDelimiter(",");
 			
 			while(scanner.hasNextLine()){

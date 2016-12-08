@@ -11,6 +11,8 @@ public class Operand extends ExpressionPart<Double>{
 		super();
 		this.value = value;
 	}
+	
+	
 }
 		
 
