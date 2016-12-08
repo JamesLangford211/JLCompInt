@@ -100,24 +100,6 @@ public class ExpTree<T> {
         }
     }
  
-    /** function to check if digit **/
-    private boolean isDigit(char ch)
-    {
-        return ch >= '0' && ch <= '9';
-    }
- 
-    /** function to check if operator **/
-    private boolean isOperator(char ch)
-    {
-        return ch == '+' || ch == '-' || ch == '*' || ch == '/';
-    }
- 
-    /** function to convert character to digit **/
-    private int toDigit(char ch)
-    {
-        return ch - '0';
-    }
- 
     /** function to build tree from input */
     public void buildTree(ArrayList<ExpressionPart> exp)
     {

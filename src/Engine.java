@@ -16,15 +16,19 @@ public class Engine {
 			//Make some random functions
 		ArrayList<ArrayList<ExpressionPart>> initialFunctions = initialFunctionList(POP);
 			//Store the data we are going to be applying to it
-		ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);
-			
+		ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);	
 		
-		
+		ExpressionConverter ex = new ExpressionConverter("1 - 3 + 2", ExpressionConverter.EXPRESSIONTYPE.Infix);
+		String pref = ex.GetPrefixExpression();
+		System.out.println(pref);
 		
 		//EVAL collection
 		for(int i = 0; i<initialFunctions.size(); i++){
 			// for every function
 			// combine operators from function and data
+			for(int j = 0; j<initialFunctions.size(); j++){
+				
+			}
 			// apply to every row and create a score
 			// store function and score somewhere
 			
@@ -40,7 +44,7 @@ public class Engine {
 	public String expressionText(ArrayList<ExpressionPart> exp){
 		String expression = "";
 		for(ExpressionPart ep : exp){
-			expression+= ep.toString();
+			expression+= ep.toString() + " ";
 		}
 		
 		return expression;
@@ -57,7 +61,6 @@ public class Engine {
 		}		
 		return expression;
 	}
-	
 	public ArrayList<ArrayList<Operand>> popDataTable(String url){
 		ArrayList<ArrayList<Operand>> dataTable = new ArrayList<ArrayList<Operand>>();
 		Scanner scanner;
@@ -83,8 +86,6 @@ public class Engine {
 		
 		return dataTable;
 }
-
-	
 	public ArrayList<ArrayList<ExpressionPart>> initialFunctionList(int popSize){
 		ArrayList<ArrayList<ExpressionPart>> list = new ArrayList<ArrayList<ExpressionPart>>();
 		
@@ -99,7 +100,16 @@ public class Engine {
 		}
 		return list;
 	}
-	
+	public ArrayList<ExpressionPart> stringToExpression(String str){
+		ArrayList<ExpressionPart> 
+		String[] strArr = str.split(" ");
+		for(String s : strArr){
+			if(s.charAt(0) == '+'){
+				
+			}
+		}
+		return null;
+	}
 	public void listToString(ArrayList<ArrayList<ExpressionPart>> functions){
 		for(int i = 0; i<functions.size();i++){
 			System.out.println("Function " + i + ":");
