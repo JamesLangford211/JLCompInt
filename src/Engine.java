@@ -14,13 +14,15 @@ public class Engine {
 
 		//Initialisation:
 			//Make some random functions
-		ArrayList<ArrayList<ExpressionPart>> randomFunctions = initialFunctionList(POP);
+		ArrayList<ArrayList<ExpressionPart>> initialFunctions = initialFunctionList(POP);
+			//Store the data we are going to be applying to it
 		ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);
+			
 		
 		
 		
 		//EVAL collection
-		for(int i = 0; i<randomFunctions.size(); i++){
+		for(int i = 0; i<initialFunctions.size(); i++){
 			// for every function
 			// combine operators from function and data
 			// apply to every row and create a score
