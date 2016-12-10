@@ -1,46 +1,115 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Stack;
+import com.fathzer.soft.javaluator.*;
 
 public class Engine {
 	
 	final String TEST_URL = "src/cwk_test.csv";
-	final int POP = 10;
+	final int STARTING_POP = 100;
+	final double MUTATION_PROBABILITY = 0.05;
+	final ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);
+	final ArrayList<Double> expected = getExpected(TEST_URL);
+	DoubleEvaluator evaluator = new DoubleEvaluator();
 	
 	public Engine(){
-
-		//Initialisation:
+		
+		//Initialise()
+			//Initialisation:
 			//Make some random functions
-		ArrayList<ArrayList<ExpressionPart>> initialFunctions = initialFunctionList(POP);
-			//Store the data we are going to be applying to it
-		ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);	
-		
-		ExpressionConverter ex = new ExpressionConverter("1 - 3 + 2", ExpressionConverter.EXPRESSIONTYPE.Infix);
-		String pref = ex.GetPrefixExpression();
-		System.out.println(pref);
-		
-		//EVAL collection
-		for(int i = 0; i<initialFunctions.size(); i++){
-			// for every function
-			// combine operators from function and data
-			for(int j = 0; j<initialFunctions.size(); j++){
-				
-			}
-			// apply to every row and create a score
-			// store function and score somewhere
+		ArrayList<ArrayList<ExpressionPart>> initFunctions = initialFunctionList(STARTING_POP);
+		evaluate(initFunctions);
 			
-		}
+		/**
+		 *      Initialise random population
+		 * -->  Evaluate population
+		 * |    Select parents
+		 * |    Combine parents to make shell offspring
+		 * |    Create new population with slight mutations
+		 * --- Repeat
+		 */
 		
-		//SELECT parents
-		//RECOMBINE parents
-		//MUTATE offspring
-		//EVAL offspring
+		
+	
 		
 	}
 	
+	public ArrayList<ArrayList<String>> evaluate(ArrayList<ArrayList<ExpressionPart>> functions){
+		ArrayList<ArrayList<String>> iterationFitnesses = new ArrayList<ArrayList<String>>();
+		
+		//EVAL collection
+				for(int i = 0; i<functions.size(); i++){
+					Double fitness = 0.0;
+					// for every function
+					for(int j = 0; j<dataSet.size(); j++){
+						//for every data row
+						//combine row of data and function
+						ArrayList<ExpressionPart> expression = formExpression(functions.get(i), dataSet.get(j));
+						Double result = evaluator.evaluate(listToString(expression));
+						fitness += score(result, expected.get(j));	
+					}
+					fitness = fitness/dataSet.size();
+					ArrayList<String> fitnessRow = new ArrayList<String>();
+					fitnessRow.add(""+fitness);
+					fitnessRow.add(listToString(functions.get(i)));
+					iterationFitnesses.add(fitnessRow);
+				}
+				
+				Collections.sort(iterationFitnesses, new Comparator<ArrayList<String>>() {    
+			        @Override
+			        public int compare(ArrayList<String> o1, ArrayList<String> o2) {
+			            return o1.get(0).compareTo(o2.get(0));
+			        }               
+			});
+				
+		return iterationFitnesses;
+	}
+	
+	
+	public Boolean isInRange(Double number, Double expected, Double range){
+		Double lowerBound = expected-(range);
+		Double upperBound = expected + range;
+		if (lowerBound <= number && number <= upperBound){
+			return true;
+		}
+		return false;
+	}
+	public ArrayList<ArrayList<ExpressionPart>> mutatePop(ArrayList<ArrayList<ExpressionPart>> population){
+		ArrayList<ArrayList<ExpressionPart>> mutatedPop = new ArrayList<ArrayList<ExpressionPart>>();
+		for(int i = 0; i<population.size();i++){
+			for(int j = 0; j<population.get(i).size(); j++){
+				Random r = new Random();
+				double randomValue = r.nextDouble();
+				if(randomValue<=MUTATION_PROBABILITY){
+					//mutate
+					population.get(i).get(j).changeRandomly();
+				}
+			}
+		}
+		return mutatedPop;
+	}
+	
+	public Double score(Double number, Double expected){
+		Double score = 100.0;
+		if(number == expected){
+			return score;
+		}
+		else{
+			for(int i = 1; i<201; i++){
+				Double range = (number*0.005) * i;
+				if(!isInRange(number, expected, range)){
+					score -= 1;
+				}
+			}
+		}
+		return score;
+	}
 	public String expressionText(ArrayList<ExpressionPart> exp){
 		String expression = "";
 		for(ExpressionPart ep : exp){
@@ -94,29 +163,64 @@ public class Engine {
 			for(int i = 0; i<12; i++){
 				Operator op = new Operator();
 				op.changeRandomly();
+				//System.out.print(op.toString());
 				subList.add(op);
 			}
+			System.out.print("\n");
 			list.add(subList);
 		}
 		return list;
 	}
 	public ArrayList<ExpressionPart> stringToExpression(String str){
-		ArrayList<ExpressionPart> 
-		String[] strArr = str.split(" ");
-		for(String s : strArr){
-			if(s.charAt(0) == '+'){
-				
-			}
-		}
+		//ArrayList<ExpressionPart> 
+		//String[] strArr = str.split(" ");
+		//for(String s : strArr){
+		//	if(s.charAt(0) == '+'){
+		//		
+		//	}
+		//}
 		return null;
 	}
-	public void listToString(ArrayList<ArrayList<ExpressionPart>> functions){
+	public void listsToString(ArrayList<ArrayList<ExpressionPart>> functions){
 		for(int i = 0; i<functions.size();i++){
 			System.out.println("Function " + i + ":");
 			for(int j = 0; j<functions.get(i).size(); j++){
 				System.out.print(functions.get(i).get(j).toString());
 			}
 		}
+	}
+	
+	public String listToString(ArrayList<ExpressionPart> function){
+		String returnStr = "";
+		for(int i = 0; i<function.size(); i++){
+			returnStr += function.get(i).toString() + " ";
+		}
+		
+		return returnStr;
+	}
+	
+	public ArrayList<Double> getExpected(String url){
+		ArrayList<Double> expected = new ArrayList<Double>();
+		Scanner scanner;
+		try {
+			scanner = new Scanner(new File(url));
+			scanner.useDelimiter(",");
+			
+			while(scanner.hasNextLine()){
+	        	String line = scanner.nextLine();
+	        	String[] lineSplit = line.split(",");
+	        	
+	        	expected.add(Double.parseDouble(lineSplit[0]));
+	        	
+	       
+		}
+		
+		
+		} catch(FileNotFoundException e){
+		
+		}		
+		
+		return expected;
 	}
 }
 

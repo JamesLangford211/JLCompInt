@@ -1,7 +1,7 @@
 import java.util.Random;
 
 public class Operator extends ExpressionPart<Character> {
-	private final Character[] finalChars = {'+', '-','*','/'};
+	private final Character[] finalChars = {'+', '-','*'};
 	
 	public Operator(){
 		super();
@@ -13,9 +13,6 @@ public class Operator extends ExpressionPart<Character> {
 		this.value = value;
 	}
 		
-	public void changeRandomly(){
-		Random r = new Random();
-		value = finalChars[r.nextInt(4)];
-	}
+	
 	
 }
