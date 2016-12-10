@@ -35,9 +35,6 @@ public class Engine {
 		 * --- Repeat
 		 */
 		
-		
-	
-		
 	}
 	
 	public ArrayList<ArrayList<String>> evaluate(ArrayList<ArrayList<ExpressionPart>> functions){
