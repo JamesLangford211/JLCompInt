@@ -33,11 +33,7 @@ public class Engine {
 		 * |    Combine parents to make shell offspring
 		 * |    Create new population with slight mutations
 		 * --- Repeat
-		 */
-		
-		
-	
-		
+		 */		
 	}
 	
 	public ArrayList<ArrayList<String>> evaluate(ArrayList<ArrayList<ExpressionPart>> functions){
@@ -70,8 +66,6 @@ public class Engine {
 				
 		return iterationFitnesses;
 	}
-	
-	
 	public Boolean isInRange(Double number, Double expected, Double range){
 		Double lowerBound = expected-(range);
 		Double upperBound = expected + range;
@@ -94,7 +88,6 @@ public class Engine {
 		}
 		return mutatedPop;
 	}
-	
 	public Double score(Double number, Double expected){
 		Double score = 100.0;
 		if(number == expected){
@@ -189,7 +182,6 @@ public class Engine {
 			}
 		}
 	}
-	
 	public String listToString(ArrayList<ExpressionPart> function){
 		String returnStr = "";
 		for(int i = 0; i<function.size(); i++){
@@ -198,7 +190,6 @@ public class Engine {
 		
 		return returnStr;
 	}
-	
 	public ArrayList<Double> getExpected(String url){
 		ArrayList<Double> expected = new ArrayList<Double>();
 		Scanner scanner;
