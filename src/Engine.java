@@ -13,7 +13,7 @@ import com.fathzer.soft.javaluator.*;
 public class Engine {
 	
 	final String TEST_URL = "src/cwk_test.csv";
-	final int STARTING_POP = 5;
+	final int STARTING_POP = 100;
 	final double MUTATION_PROBABILITY = 0.05;
 	final int ITERATIONS = 1;
 	final ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);
@@ -36,6 +36,7 @@ public class Engine {
 		 * |    Create new population with slight mutations
 		 * --- Repeat
 		 */
+		 
 		
 		
 		for(int i = 0; i<ITERATIONS; i++){
