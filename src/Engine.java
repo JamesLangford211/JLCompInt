@@ -13,9 +13,10 @@ import com.fathzer.soft.javaluator.*;
 public class Engine {
 	
 	final String TEST_URL = "src/cwk_test.csv";
-	final int STARTING_POP = 100;
+	final int STARTING_POP = 5;
 	final double MUTATION_PROBABILITY = 0.05;
 	final int ITERATIONS = 1;
+	
 	final ArrayList<ArrayList<Operand>> dataSet = popDataTable(TEST_URL);
 	final ArrayList<Double> expected = getExpected(TEST_URL);
 	DoubleEvaluator evaluator = new DoubleEvaluator();
@@ -26,7 +27,6 @@ public class Engine {
 			//Initialisation:
 			//Make some random functions
 		ArrayList<ArrayList<ExpressionPart>> currentFunctions = initialFunctionList(STARTING_POP);
-		//System.out.println(evaluate(currentFunctions));
 			
 		/**
 		 *      Initialise random population
@@ -42,16 +42,104 @@ public class Engine {
 		for(int i = 0; i<ITERATIONS; i++){
 			ArrayList<ArrayList<ExpressionPart>> subPop = getTopTwoParents(currentFunctions);
 			//select subsection of population
-			System.out.print("\n Best for iteration "+i+" : "+subPop.get(0));
+			//combine two best parents
 		}
+		
+		Operator op1 = new Operator('+');
+		Operator op2 = new Operator('-');
+		
+		ArrayList<ExpressionPart> plus = new ArrayList<ExpressionPart>();
+		plus.add(op1);
+		plus.add(op1);
+		plus.add(op1);
+		plus.add(op1);
+		
+		ArrayList<ExpressionPart> minus = new ArrayList<ExpressionPart>();
+		minus.add(op2);
+		minus.add(op2);
+		minus.add(op2);
+		minus.add(op2);
+		
+		System.out.println(plus.toString());
+		System.out.println(minus.toString());
+		ArrayList<ArrayList<ExpressionPart>> test = new ArrayList<ArrayList<ExpressionPart>>();
+		test.add(plus);
+		test.add(minus);
+		System.out.println(orderedCrossover(test).toString());
 		
 	}
 
+	public ArrayList<ExpressionPart> orderedCrossover(ArrayList<ArrayList<ExpressionPart>> twoParents){
+		ArrayList<ExpressionPart> parent1 = twoParents.get(0);
+		ArrayList<ExpressionPart> parent2 = twoParents.get(1);
+		
+		//get the size of the list
+		final int size = parent1.size();
+		
+		// choose two random numbers for the start and end indices of the slice
+		// (one can be at index "size")
+		Random random = new Random();
+		final int number1 = random.nextInt(size-1);
+		final int number2 = random.nextInt(size);
+		
+		// make the smaller the start and the larger the end
+		final int start = Math.min(number1, number2);
+		final int end = Math.max(number1, number2);
+		// instantiate a child
+		ArrayList<ExpressionPart> child1 = new ArrayList<ExpressionPart>();
+		ArrayList<ExpressionPart> child2 = new ArrayList<ExpressionPart>();
+		
+		// add the sublist in between the start and end points to the children
+		child1.addAll(parent1.subList(start, end));
+		child2.addAll(parent2.subList(start, end));
+		
+		// iterate over each city in the parent tours
+		int currentIndex = 0;
+		ExpressionPart<Operator> currentInParent1 = null;
+		ExpressionPart<Operator> currentInParent2 = null;
+		//for
+		for(int i = 0; i<size; i++){
+			
+			// get the index of the current city
+			currentIndex = (end + i) % size;
+			
+			// get the city at the current index in each of the two parent tours
+			currentInParent1 = parent1.get(currentIndex);
+			currentInParent2 = parent2.get(currentIndex);
+			
+			// if child 1 does not already contain the current city in tour 2, add it
+			if(!child1.contains(currentInParent2)){
+				child1.add(currentInParent2);
+			}
+			// if child 2 does not already contain the current city in tour 1, add it
+			if(!child2.contains(currentInParent1)){
+				child2.add(currentInParent1);
+			}
+		}
+		
+		// rotate the lists so the original slice is in the same place as in the
+		// parent tours
+		Collections.rotate(child1, start);
+		Collections.rotate(child2, start);
+		
+		// copy the tours from the children back into the parents, because crossover
+		// functions are in-place!
+		Collections.copy(parent1, child2);
+		Collections.copy(parent2, child1);
+		
+		ArrayList<ExpressionPart> child = new ArrayList<ExpressionPart>();
+		child.addAll(child1);
+		child.addAll(child2);
+	
+		return child;
+	}
+	
 	public ArrayList<ArrayList<ExpressionPart>> getTopTwoParents(ArrayList<ArrayList<ExpressionPart>> pop){
 		ArrayList<ArrayList<ExpressionPart>> parents = new ArrayList<ArrayList<ExpressionPart>>();
 		//select best two
 		ArrayList<ArrayList<String>> evaluatedSet = evaluate(pop);
 		bestToWorst(evaluatedSet);
+		
 		
 		/*for(int i = 0; i<evaluatedSet.size(); i++){
 			System.out.println(evaluatedSet.get(i).toString());
@@ -60,9 +148,9 @@ public class Engine {
 		ArrayList<ExpressionPart> parent1 = stringToExpression(evaluatedSet.get(0).get(1));
 		ArrayList<ExpressionPart> parent2 = stringToExpression(evaluatedSet.get(1).get(1));
 	
-		
 		parents.add(parent1);
 		parents.add(parent2);
+	
 		return parents;
 	}
 	
@@ -207,14 +295,20 @@ public class Engine {
 		return list;
 	}
 	public ArrayList<ExpressionPart> stringToExpression(String str){
-		//ArrayList<ExpressionPart> 
-		//String[] strArr = str.split(" ");
-		//for(String s : strArr){
-		//	if(s.charAt(0) == '+'){
-		//		
-		//	}
-		//}
-		return null;
+		ArrayList<ExpressionPart> expression = new ArrayList<ExpressionPart>();
+		String[] strArr = str.split(" ");
+		for(String s : strArr){
+			if(s.charAt(0) == '+'){
+				expression.add(new Operator('+'));
+			}
+			if(s.charAt(0) == '-'){
+				expression.add(new Operator('-'));
+			}
+			if(s.charAt(0) == '*'){
+				expression.add(new Operator('*'));
+			}
+		}
+		return expression;
 	}
 	public void listsToString(ArrayList<ArrayList<ExpressionPart>> functions){
 		for(int i = 0; i<functions.size();i++){
@@ -244,13 +338,8 @@ public class Engine {
 	        	String[] lineSplit = line.split(",");
 	        	
 	        	expected.add(Double.parseDouble(lineSplit[0]));
-	        	
-	       
-		}
-		
-		
+			}		
 		} catch(FileNotFoundException e){
-		
 		}		
 		
 		return expected;
